@@ -1,18 +1,16 @@
+## The data matrix is assumed to have N rows and G columns, where N is the number of samples, and G is the number of genes.
 library(peer)
-expr = read.csv('./expression.csv', header=FALSE)
+expr = read.table("TPM_qqnorm.txt", header=F, sep="\t")
 model = PEER()
-PEER_setPhenoMean(model,as.matrix(expr))
+## set data and parameters
 PEER_setNk(model,10)
-PEER_getNk(model)
-PEER_update(model)
-PEER_setAdd_mean(model, TRUE)
-PEER_setNmax_iterations(model, 1000)
-PEER_setTolerance(model,1)
-PEER_setVarTolerance(model,0.1)
+PEER_setPhenoMean(model,as.matrix(expr))
+## set priors
 PEER_setPriorAlpha(model,0.001,0.1)
-PEER_setPriorEps(model,0.1,10)
+PEER_setPriorEps(model,0.1,10.)
+PEER_setNmax_iterations(model,1000)
+## perform inference
+PEER_update(model)
+#factors
 factors = PEER_getX(model)
-weights = PEER_getW(model)
-precision = PEER_getAlpha(model)
-residuals = PEER_getResiduals(model)
-write.table(factors,"peer.txt",quote=F,row.names=F,col.names=F,sep="\t")
+write.table(factors,"exp.peer.txt",quote=F,row.names=F,col.names=F,sep="\t")
